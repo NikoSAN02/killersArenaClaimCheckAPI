@@ -13,6 +13,9 @@ const ABI = [
 const provider = new ethers.JsonRpcProvider(ZKCANDY_RPC);
 const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
 
+// Balance cache with 5 second TTL
+const balanceCache = new Map();
+
 // Add request logging middleware
 app.use((req, res, next) => {
   console.log(`Incoming request: ${req.method} ${req.url}`);
@@ -30,7 +33,21 @@ app.get('/v1/okx_task_requirement', async (req, res) => {
       return res.status(400).json({ code: 1, message: 'Address parameter is required' });
     }
 
+    // Check cache first
+    const cacheKey = address.toLowerCase();
+    if (balanceCache.has(cacheKey)) {
+      const cached = balanceCache.get(cacheKey);
+      if (Date.now() - cached.timestamp < 5000) {
+        const duration = process.hrtime(startTime);
+        const ms = (duration[0] * 1000 + duration[1] / 1e6).toFixed(2);
+        console.log(`Served cached balance for ${address} in ${ms}ms`);
+        return res.json({ code: 0, data: cached.balance > 0 });
+      }
+    }
+
     const balance = await contract.balanceOf(address);
+    balanceCache.set(cacheKey, { balance, timestamp: Date.now() });
+    
     const result = {
       code: 0,
       data: balance > 0
