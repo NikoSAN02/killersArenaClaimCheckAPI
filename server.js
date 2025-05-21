@@ -23,11 +23,7 @@ app.use((req, res, next) => {
 });
 
 // Task verification endpoint
-// Only measure timing for 1% of requests
-const shouldMeasureTiming = Math.random() < 0.01;
-
 app.get('/okx_task_requirement', async (req, res) => {
-  const startTime = shouldMeasureTiming ? process.hrtime() : null;
   
   try {
     const { address } = req.query;
@@ -41,9 +37,7 @@ app.get('/okx_task_requirement', async (req, res) => {
     if (balanceCache.has(cacheKey)) {
       const cached = balanceCache.get(cacheKey);
       if (Date.now() - cached.timestamp < 5000) {
-        const duration = process.hrtime(startTime);
-        const ms = (duration[0] * 1000 + duration[1] / 1e6).toFixed(2);
-        console.log(`Served cached balance for ${address} in ${ms}ms`);
+        console.log(`Served cached balance for ${address}`);
         return res.json({ code: 0, data: cached.balance > 0 });
       }
     }
@@ -56,18 +50,11 @@ app.get('/okx_task_requirement', async (req, res) => {
       data: balance > 0
     };
     
-    if (shouldMeasureTiming) {
-      const duration = process.hrtime(startTime);
-      const ms = (duration[0] * 1000 + duration[1] / 1e6).toFixed(2);
-      console.log(`[Sample] Processed request for ${address} in ${ms}ms. Balance: ${balance}`);
-    }
+    console.log(`Processed request for ${address}. Balance: ${balance}`);
     res.json(result);
     
   } catch (error) {
-    const duration = process.hrtime(startTime);
-    const ms = (duration[0] * 1000 + duration[1] / 1e6).toFixed(2);
-    
-    console.error(`Error checking balance (${ms}ms):`, error);
+    console.error('Error checking balance:', error);
     res.status(500).json({ code: 2, message: 'Error checking balance' });
   }
 });
