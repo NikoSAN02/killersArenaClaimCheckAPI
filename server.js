@@ -3,8 +3,8 @@ const { ethers } = require('ethers');
 const app = express();
 const PORT = 8080;
 
-// zkCandy Smart Chain configuration - using premium RPC
-const ZKCANDY_RPC = 'https://zkcandy-mainnet.rpc.thirdweb.com';
+// zkCandy Smart Chain configuration
+const ZKCANDY_RPC = 'https://rpc.zkcandy.io';
 const CONTRACT_ADDRESS = '0x023B06cD5C78C56b91bDB51C4a68ad8E5aB58D56';
 const ABI = [
   "function balanceOf(address owner) view returns (uint256)"
