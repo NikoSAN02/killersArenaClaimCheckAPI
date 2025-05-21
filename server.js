@@ -23,8 +23,11 @@ app.use((req, res, next) => {
 });
 
 // Task verification endpoint
-app.get('/v1/okx_task_requirement', async (req, res) => {
-  const startTime = process.hrtime();
+// Only measure timing for 1% of requests
+const shouldMeasureTiming = Math.random() < 0.01;
+
+app.get('/okx_task_requirement', async (req, res) => {
+  const startTime = shouldMeasureTiming ? process.hrtime() : null;
   
   try {
     const { address } = req.query;
@@ -53,10 +56,11 @@ app.get('/v1/okx_task_requirement', async (req, res) => {
       data: balance > 0
     };
     
-    const duration = process.hrtime(startTime);
-    const ms = (duration[0] * 1000 + duration[1] / 1e6).toFixed(2);
-    
-    console.log(`Processed request for ${address} in ${ms}ms. Balance: ${balance}`);
+    if (shouldMeasureTiming) {
+      const duration = process.hrtime(startTime);
+      const ms = (duration[0] * 1000 + duration[1] / 1e6).toFixed(2);
+      console.log(`[Sample] Processed request for ${address} in ${ms}ms. Balance: ${balance}`);
+    }
     res.json(result);
     
   } catch (error) {
