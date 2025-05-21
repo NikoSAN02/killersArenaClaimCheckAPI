@@ -5,7 +5,7 @@ const PORT = 8080;
 
 // zkCandy Smart Chain configuration
 const ZKCANDY_RPC = 'https://rpc.zkcandy.io';
-const CONTRACT_ADDRESS = 'const CONTRACT_ADDRESS = "0xE16bcF46B98cab58C661531Ff02D64DA59C39D19';
+const CONTRACT_ADDRESS = "0xE16bcF46B98cab58C661531Ff02D64DA59C39D19";
 const ABI = [
   "function balanceOf(address owner) view returns (uint256)"
 ];
@@ -46,7 +46,8 @@ app.get('/okx_task_requirement', async (req, res) => {
       }
     }
 
-    const balance = await contract.balanceOf(address);
+    // Force direct address call (no ENS resolution)
+    const balance = await contract.balanceOf(address, { enableENS: false });
     balanceCache.set(cacheKey, { balance, timestamp: Date.now() });
     
     const result = {
