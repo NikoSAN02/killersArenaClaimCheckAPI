@@ -10,7 +10,11 @@ const ABI = [
   "function balanceOf(address owner) view returns (uint256)"
 ];
 
-const provider = new ethers.JsonRpcProvider(ZKCANDY_RPC);
+const provider = new ethers.JsonRpcProvider(ZKCANDY_RPC, {
+  chainId: 320,
+  name: 'zkCandy',
+  ensAddress: null // Disable ENS resolution
+});
 const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
 
 // Balance cache with 5 second TTL
