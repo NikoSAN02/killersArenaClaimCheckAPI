@@ -5,7 +5,7 @@ const PORT = 8080;
 
 // zkCandy Smart Chain configuration
 const ZKCANDY_RPC = 'https://rpc.zkcandy.io';
-const CONTRACT_ADDRESS = "0xE16bcF46B98cab58C661531Ff02D64DA59C39D19";
+const CONTRACT_ADDRESS = "0x4A62198B40d6082dFDBf5bDfD247638E241ff0a4";
 const ABI = [
   "function balanceOf(address owner) view returns (uint256)"
 ];
